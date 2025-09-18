@@ -29,9 +29,6 @@
  *  This allows for conditions to be evaluated in a more flexible way, where the evaluation can continue even if
  *  a condition is met. `ts-pattern` does not have this feature. This is useful for scenarios where you want to
  *  evaluate multiple conditions and, through the context, append to a data structure or perform multiple actions.
- *
- * @author Cameron McNaught <cameron.mcnaught@justeattakeaway.com>
- * @version 1.0.0
  */
 
 type ConditionBase<Context> = {
