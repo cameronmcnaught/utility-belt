@@ -20,6 +20,10 @@ type WritableKeys<T> = {
   [K in keyof T]: IsReadonlyKey<T, K> extends true ? never : K;
 }[keyof T];
 
+type StripFunctions<T> = {
+  [K in keyof T as T[K] extends Function ? never : K]: T[K];
+};
+
 /**
  * Get the setters for all writable keys in the given shape.
  * Any keys marked as readonly will be ignored.
@@ -48,6 +52,16 @@ const createDataSlice =
   <S, D>(initialState: D): StateCreator<S, [], [], D> =>
   () => ({ ...initialState });
 
+const stripFunctions = <T>(obj: T) => {
+  const result = {} as T;
+  for (const key in obj) {
+    if (typeof obj[key] !== 'function') {
+      result[key] = obj[key];
+    }
+  }
+  return result as StripFunctions<T>;
+};
+
 /**
  * Creates a zustand slice that contains only the setter functions for the initial state.
  *
@@ -57,7 +71,7 @@ const createSettersSlice =
   <S, D>(initialState: D): StateCreator<S, [], [], Setters<D>> =>
   (set) => {
     const result = {} as Setters<D>;
-    for (const key in initialState) {
+    for (const key in stripFunctions(initialState)) {
       const setterKey = `set${key.charAt(0).toUpperCase() + key.slice(1)}`;
       // @ts-expect-error - Dynamic key
       result[setterKey] = (value: (typeof initialState)[typeof key]) =>

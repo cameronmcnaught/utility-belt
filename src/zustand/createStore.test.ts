@@ -6,12 +6,15 @@ describe('createStore', () => {
     const useConfig = createStore({
       isTutorial: false,
       count: 0,
+      toggle() {},
     });
 
     expect(useConfig.getState()).toHaveProperty('isTutorial');
     expect(useConfig.getState()).toHaveProperty('count');
     expect(useConfig.getState()).toHaveProperty('setIsTutorial');
     expect(useConfig.getState()).toHaveProperty('setCount');
+    expect(useConfig.getState()).toHaveProperty('toggle');
+    expect(useConfig.getState()).not.toHaveProperty('setToggle');
     expect(useConfig.getState()).toHaveProperty('reset');
   });
 
@@ -22,7 +25,10 @@ describe('createStore', () => {
    * direct assignment to it in code.
    */
   test('Creates a store with setters for readonly properties', () => {
-    type Config = { readonly isTutorial: boolean; count: number };
+    type Config = {
+      readonly isTutorial: boolean;
+      count: number;
+    };
 
     const useConfig = createStore<Config>({
       isTutorial: false,
