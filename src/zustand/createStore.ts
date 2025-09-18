@@ -20,9 +20,9 @@ type WritableKeys<T> = {
   [K in keyof T]: IsReadonlyKey<T, K> extends true ? never : K;
 }[keyof T];
 
-type StripFunctions<T> = {
-  [K in keyof T as T[K] extends Function ? never : K]: T[K];
-};
+type FunctionKeys<T> = {
+  [K in keyof T]: T[K] extends Function ? K : never;
+}[keyof T];
 
 /**
  * Get the setters for all writable keys in the given shape.
@@ -38,7 +38,9 @@ type StripFunctions<T> = {
  * // { setFname: (v: string) => void; setLname: (v: string) => void; }
  */
 type Setters<T> = {
-  [K in WritableKeys<T> as `set${Capitalize<string & K>}`]: (v: T[K]) => void;
+  [K in Exclude<WritableKeys<T>, FunctionKeys<T>> as `set${Capitalize<
+    string & K
+  >}`]: (v: T[K]) => void;
 };
 
 /// Utility functions to implement the above types
@@ -59,7 +61,7 @@ const stripFunctions = <T>(obj: T) => {
       result[key] = obj[key];
     }
   }
-  return result as StripFunctions<T>;
+  return result as Omit<T, FunctionKeys<T>>;
 };
 
 /**
