@@ -111,4 +111,27 @@ describe('createStore', () => {
     useConfig.getState().toggleTutorial();
     expect(useConfig.getState().isTutorial).toBe(false);
   });
+
+  test('Creates a store with a custom setter that overrides a generated setter', () => {
+    const useConfig = createStore(
+      {
+        isEven: false,
+        count: 0,
+      },
+      (set) => ({
+        setCount: (v: number) => set({ count: v, isEven: v % 2 === 0 }),
+      })
+    );
+
+    expect(useConfig.getState().count).toBe(0);
+    expect(useConfig.getState().isEven).toBe(false);
+
+    useConfig.getState().setCount(1);
+    expect(useConfig.getState().count).toBe(1);
+    expect(useConfig.getState().isEven).toBe(false);
+
+    useConfig.getState().setCount(2);
+    expect(useConfig.getState().count).toBe(2);
+    expect(useConfig.getState().isEven).toBe(true);
+  });
 });
